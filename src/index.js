@@ -1,51 +1,58 @@
-import React, { useEffect } from "react";
+import React from "react";
 import ReactDOM from "react-dom";
-import App from "./components/App";
-import * as serviceWorker from "./serviceWorker";
-import {
-  BrowserRouter as Router,
-  Route,
-  Switch,
-  withRouter
-} from "react-router-dom";
-import "semantic-ui-css/semantic.min.css";
-import firebase from "./firebase";
-import Login from "./components/Auth/Login";
-import Register from "./components/Auth/Register";
-import Spinner from "./Spinner";
 import { createStore } from "redux";
 import { Provider, connect } from "react-redux";
 import { composeWithDevTools } from "redux-devtools-extension";
+import "semantic-ui-css/semantic.min.css";
+
+import App from "./components/App";
+import Login from "./components/Auth/Login";
+import Register from "./components/Auth/Register";
+import Spinner from "./Spinner";
+import * as serviceWorker from "./serviceWorker";
+import firebase from "./firebase";
+
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  withRouter
+} from "react-router-dom";
 import rootReducer from "./reducers";
 import { setUser, clearUser } from "./actions";
 
 const store = createStore(rootReducer, composeWithDevTools());
 
-const Root = ({ history, setUser, clearUser, isLoading }) => {
-  useEffect(() => {
+class Root extends React.Component {
+  componentDidMount() {
+    // console.log(this.props.isLoading);
+    // const { user } = this.props;
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
-        setUser(user);
-        history.push("/");
+        this.props.setUser(user);
+        this.props.history.push("/");
       } else {
-        history.push("/login");
-        clearUser();
+        this.props.history.push("/login");
+        this.props.clearUser();
       }
     });
-  }, [history, setUser, clearUser]);
+  }
 
-  return isLoading ? (
-    <Spinner />
-  ) : (
-    <Switch>
-      <Route exact path='/' component={App} />
-      <Route exact path='/register' component={Register} />
-      <Route exact path='/login' component={Login} />
-    </Switch>
-  );
-};
+  render() {
+    return this.props.isLoading ? (
+      <Spinner />
+    ) : (
+      <Switch>
+        <Route path='/' exact component={App} />
+        <Route path='/login' component={Login} />
+        <Route path='/register' component={Register} />
+      </Switch>
+    );
+  }
+}
 
 const mapStateToProps = (state) => ({
+  // user: state.user.currentUser
   isLoading: state.user.isLoading
 });
 
