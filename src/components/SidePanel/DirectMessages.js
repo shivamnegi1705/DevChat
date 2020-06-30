@@ -19,6 +19,16 @@ class DirectMessages extends React.Component {
     this.addListeners(this.state.user.uid);
   }
 
+  componentWillUnmount() {
+    this.removeListeners();
+  }
+
+  removeListeners = () => {
+    this.state.usersRef.off();
+    this.state.presenceRef.off();
+    this.state.connectedRef.off();
+  };
+
   addListeners = (currentUserUid) => {
     let loadedUsers = [];
 
@@ -98,7 +108,7 @@ class DirectMessages extends React.Component {
     const { users, activeChannel } = this.state;
 
     return (
-      <Menu.Menu className='menu'>
+      <Menu.Menu className='menu direct-messages'>
         <Menu.Item>
           <span>
             <Icon name='mail' /> DIRECT MESSAGES

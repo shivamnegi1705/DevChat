@@ -8,20 +8,35 @@ class MessagesHeader extends React.Component {
       numUniqueUsers,
       handleSearchChange,
       searchLoading,
-      isPrivateChannel
+      isPrivateChannel,
+      handleStar,
+      isChannelStarred,
+      messages
     } = this.props;
 
     return (
-      <Segment clearing>
-        <Header fluid='true' as='h2' style={{ marginBottom: 0 }}>
-          <span>
+      <Segment clearing className='messages__header'>
+        <Header
+          fluid='true'
+          as='h2'
+          style={{ marginBottom: 0, textAlign: "left" }}
+        >
+          <span className='responsive-title'>
             {channelName}
-            {!isPrivateChannel && <Icon name={"star outline"} color='black' />}
+            {!isPrivateChannel && (
+              <Icon
+                onClick={handleStar}
+                name={isChannelStarred ? "star" : "star outline"}
+                color={isChannelStarred ? "yellow" : "black"}
+                style={{ cursor: "pointer" }}
+              />
+            )}
           </span>
           <Header.Subheader>{numUniqueUsers}</Header.Subheader>
         </Header>
         <Header floated='right'>
           <Input
+            className='search__input'
             loading={searchLoading}
             size='mini'
             icon='search'
