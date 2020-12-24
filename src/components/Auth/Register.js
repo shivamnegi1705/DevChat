@@ -3,6 +3,7 @@ import { Grid, Form, Segment, Button, Header, Message, Icon} from 'semantic-ui-r
 import { Link } from 'react-router-dom';
 import '../App.css';
 import firebase from '../../firebase';
+import md5 from 'md5';
 
 class Register extends React.Component {
     
@@ -13,7 +14,8 @@ class Register extends React.Component {
         password: '',
         passwordConfirmation: '',
         errors: [],
-        loading: false
+        loading: false,
+        usersRef: firebase.database().ref('users')
     }
 
     // to capture value of user data.
@@ -69,6 +71,13 @@ class Register extends React.Component {
         }
     }
 
+    saveUser = (createdUser) => {
+        return this.state.usersRef.child(createdUser.user.uid).set({
+            name: this.state.username,
+            avatar: createdUser.user.photoURL
+        });
+    }
+
     // function to handle form submit.
     handleSubmit = (event) => {
         event.preventDefault();
@@ -79,8 +88,20 @@ class Register extends React.Component {
             .auth()
             .createUserWithEmailAndPassword(this.state.email, this.state.password)
             .then( createdUser => {
-                console.log(createdUser);
-                this.setState({loading: false});
+                // setting displayName and a random photoURL from gravatar
+                // md5 use to hash unique value
+                createdUser.user.updateProfile({
+                    displayName: this.state.username,
+                    photoURL: `http://gravatar.com/avatar/${md5(createdUser.user.email)}?d=identicon`
+                })
+                .then(() => {
+                    this.saveUser(createdUser).then(() => {
+                        console.log('user saved!')
+                    })
+                })
+                .catch((err) => {
+                    this.setState({errors: this.state.errors.concat(err), loading: false});
+                })
             })
             .catch(err => {
                 console.log(err);
@@ -95,7 +116,7 @@ class Register extends React.Component {
             <Grid textAlign="center" verticalAlign="middle" className="app">
                 <Grid.Column style={{ maxWidth: 450 }}>
                     
-                    <Header as="h2" icon color="orange" textAlign="center">
+                    <Header as="h1" icon color="orange" textAlign="center">
                         <Icon name="puzzle piece" color="orange" />
                         Register For DevChat
                     </Header>
