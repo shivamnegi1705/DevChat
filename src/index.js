@@ -6,7 +6,7 @@ import firebase from './firebase';
 import { BrowserRouter as Router, Switch, Route, withRouter } from 'react-router-dom';
 
 import rootReducer from './reducers';
-import { setUser } from './actions';
+import { setUser, clearUser } from './actions';
 
 import App from './components/App';
 import Login from './components/Auth/Login';
@@ -27,6 +27,10 @@ class Root extends React.Component {
                 this.props.setUser(user);
                 this.props.history.push('/');
             }
+            else{
+                this.props.history.push('/login');
+                this.props.clearUser();
+            }
         })
     }
     
@@ -46,7 +50,8 @@ const mapStateToProps = (state) => {
 }
 
 const RootWithAuth = withRouter(connect(mapStateToProps,{
-    setUser: setUser
+    setUser: setUser,
+    clearUser: clearUser
 })(Root));
 
 ReactDOM.render(
