@@ -1,9 +1,10 @@
 import React from 'react';
 import { Grid, Form, Segment, Button, Header, Message, Icon} from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
+import md5 from 'md5';
+
 import '../App.css';
 import firebase from '../../firebase';
-import md5 from 'md5';
 
 class Register extends React.Component {
     
@@ -54,14 +55,14 @@ class Register extends React.Component {
         let errors = [];
         let error;
 
+        // if any field is empty
         if(this.isFormEmpty(this.state)){
-            // if any field is empty
             error = {message: 'Fill in all fields'};
             this.setState({errors: errors.concat(error)});
             return false;
         }
+        // passwords do not match
         if(!this.isPasswordValid(this.state)){
-            // passwords do not match
             error = {message: 'Password is invalid'};
             this.setState({errors: errors.concat(error)});
             return false;
@@ -88,7 +89,7 @@ class Register extends React.Component {
             .auth()
             .createUserWithEmailAndPassword(this.state.email, this.state.password)
             .then( createdUser => {
-                // setting displayName and a random photoURL from gravatar
+                // setting displayName and a random photoURL from gravatar (initially they were null)
                 // md5 use to hash unique value
                 createdUser.user.updateProfile({
                     displayName: this.state.username,
@@ -133,8 +134,10 @@ class Register extends React.Component {
                             <Form.Input fluid name="passwordConfirmation" icon="repeat" iconPosition="left" placeholder="Password Confirmation" onChange={this.handleChange} type="password" value={passwordConfirmation} className={this.handleInputError(errors,'password')}/>
 
                             <Button disabled={loading} className={loading ?'loading': ''} color="orange" fluid size="large">Submit</Button>
+
                         </Segment>
                     </Form>
+
                     {errors.length>0 && (
                         <Message error>
                             <h3>Error</h3>

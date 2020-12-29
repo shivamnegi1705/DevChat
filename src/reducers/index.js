@@ -6,9 +6,6 @@ const initialUserState = {
     isLoading: true
 };
 
-const initialChannelState = {
-    currentChannel: null
-}
 
 const user_reducer = (state = initialUserState, action) => {
     switch(action.type) {
@@ -18,16 +15,20 @@ const user_reducer = (state = initialUserState, action) => {
                 currentUser: action.payload.currentUser,
                 isLoading: false
             }
-        
+            
         case actionTypes.CLEAR_USER:
             return {
                 ...state,
                 isLoading: false
             }
-
-        default:
-            return state;
+            
+            default:
+                return state;
     }
+}
+        
+const initialChannelState = {
+    currentChannel: null
 }
 
 const channel_reducer = (state=initialChannelState, action) => {

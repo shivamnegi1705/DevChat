@@ -1,7 +1,6 @@
 import React from 'react';
 import { Dropdown, Grid, Header, Icon, Image } from 'semantic-ui-react';
 import firebase from '../../firebase';
-import { connect } from 'react-redux';
 
 class UserPanel extends React.Component {
 
@@ -14,7 +13,7 @@ class UserPanel extends React.Component {
         .auth()
         .signOut()
         .then(() => {
-            console.log('signed out');
+            console.log('signed out!');
         })
     }
     
@@ -27,10 +26,10 @@ class UserPanel extends React.Component {
     }
     
     render() {
+        const { user } = this.state;
         return (
             <Grid style={{ background: '#4c3c4c'}}>
                 <Grid.Column>
-
                     <Grid.Row style={{ padding: '1.2em', margin: 0}}>
                         
                         {/* App Header */}
@@ -41,24 +40,22 @@ class UserPanel extends React.Component {
                         
                         {/* User Dropdown */}
                         <Header style={{ padding: '0.25em'}} as="h4" inverted>
-                            <Dropdown trigger={
-                                <span>
-                                    <Image src = {this.state.user.photoURL} spaced="right" avatar/>
-                                    {this.state.user.displayName}
-                                </span>
-                            } options={this.dropDownOptions()}/>
+                            <Dropdown 
+                                trigger={
+                                    <span>
+                                        <Image src = {user.photoURL} spaced="right" avatar/>
+                                        {user.displayName}
+                                    </span>
+                                } 
+                                options={this.dropDownOptions()}
+                            />
                         </Header>
+
                     </Grid.Row>
-
-
                 </Grid.Column>
             </Grid>
         )
     }
 }
 
-const mapStateToProps = (state) => {
-    return {currentUser: state.user.currentUser};
-}
-
-export default connect(mapStateToProps)(UserPanel);
+export default UserPanel;

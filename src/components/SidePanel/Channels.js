@@ -18,15 +18,7 @@ class Channels extends React.Component {
         channelsRef: firebase.database().ref('channels'),
         firstLoad: true
     }
-
-    componentDidMount() {
-        this.addListeners();
-    }
-
-    componentWillUnmount() {
-        this.removeListeners();
-    }
-
+    
     addListeners = () => {
         let loadedChannels = [];
         this.state.channelsRef.on('child_added', (snap) => {
@@ -35,8 +27,16 @@ class Channels extends React.Component {
         })
     }
 
+    componentDidMount() {
+        this.addListeners();
+    }
+    
     removeListeners = () => {
         this.state.channelsRef.off();
+    }
+
+    componentWillUnmount() {
+        this.removeListeners();
     }
 
     setFirstChannel = () => {
@@ -133,13 +133,14 @@ class Channels extends React.Component {
         const { channels, modal } = this.state;
         return (
             <React.Fragment>
-                <Menu.Menu>
+                <Menu.Menu style={{ paddingBottom: '2em'}}>
                     <Menu.Item>
                         <span>
                             <Icon name="exchange" /> CHANNELS
                         </span>{" "}
                         ({ channels.length }) <Icon name="add" onClick={this.openModal}/>
                     </Menu.Item>
+
                     {/* Channels */}
                     {this.displayChannels(channels)}
                 </Menu.Menu>
@@ -183,8 +184,4 @@ class Channels extends React.Component {
     }
 }
 
-const mapStateToProps = (state) => {
-    return {currentUser: state.user.currentUser};
-}
-
-export default connect(mapStateToProps,{setCurrentChannel})(Channels);
+export default connect(null,{setCurrentChannel})(Channels);

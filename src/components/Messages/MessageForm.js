@@ -1,10 +1,9 @@
 import React from 'react';
 import '../App.css';
-import { connect } from 'react-redux';
 import { Segment, Button, Input } from 'semantic-ui-react';
 import firebase from '../../firebase';
 
-class MessageForm extends React.Component { 
+class MessageForm extends React.Component {
 
     state = {
         message: '',
@@ -15,13 +14,24 @@ class MessageForm extends React.Component {
         errors: []
     }
 
-    static getDerivedStateFromProps(nextProps,state){
-        return {
-            ...state,messageRef:nextProps.messagesRef, channel: nextProps.currentChannel, user: nextProps.currentUser
-        };
+    componentDidMount() {
+        const { channel, user} = this.state;
+        if(channel && user){
+            this.addListeners(channel.id)
+        }
+    }
+
+    addListeners = (channelId) => {
+        this.addMessageListener(channelId);
+    }
+
+    addMessageListener = (channelId) => {
+        let loadedMessages = [];
+        this.state.messagesRef.child(channelId).on('child_added', snap => {
+            loadedMessages.push(snap.val());
+        })
     }
     
-
     handleChange = (event) => {
         this.setState({[event.target.name]:event.target.value});
     }
@@ -40,7 +50,7 @@ class MessageForm extends React.Component {
     }
 
     sendMessage = () => {
-        const { messagesRef, message,channel } = this.state;
+        const { messagesRef, message, channel } = this.state;
         if(message){
             this.setState({loading: true});
             messagesRef
@@ -63,22 +73,32 @@ class MessageForm extends React.Component {
     }
 
     render() {
-        const { errors } = this.state;
+        const { errors, message, loading } = this.state;
         return (
             <Segment className="message__form">
-                <Input fluid name="message" style={{marginBottom: '0.7em'}} label={<Button icon="add" />} labelPosition="left" placeholder="Write your message" onChange={this.handleChange} className={
-                    errors.some(error => error.message.includes('message')) ?'error' : ''
-                }/>
+                <Input 
+                    fluid name="message"
+                    style={{marginBottom: '0.7em'}} 
+                    label={<Button icon="add" />} 
+                    labelPosition="left" 
+                    placeholder="Write your message" 
+                    onChange={this.handleChange} 
+                    className={errors.some(error => error.message.includes('message')) ?'error' : ''}
+                    value ={message}    
+                />
 
-                <Button.Group>
+                <Button.Group icon widths="2">
+                    {/* Add reply Button */}
                     <Button
                         onClick={this.sendMessage}
                         color="orange"
                         content="Add reply"
                         labelPosition="left"
                         icon="edit"
+                        disabled={loading}
                     />
 
+                    {/* Upload Media Button */}
                     <Button
                         color="teal"
                         content="Upload Media"
@@ -91,8 +111,4 @@ class MessageForm extends React.Component {
     }
 }
 
-const mapStateToProps = (state) => {
-    return {currentChannel: state.channel.currentChannel,currentUser: state.user.currentUser};
-}
-
-export default connect(mapStateToProps)(MessageForm);
+export default MessageForm;
