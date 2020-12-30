@@ -38,7 +38,7 @@ class Messages extends React.Component {
     }
 
     displayMessages = (messages) => {
-        console.log(messages);
+        // console.log(messages);
         return (
             messages.length>0 && messages.map(message => {
                 return (
