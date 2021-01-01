@@ -14,8 +14,10 @@ class Messages extends React.Component {
         messagesRef: firebase.database().ref('messages'),
         user: this.props.currentUser,
         channel: this.props.currentChannel,
-        messages:[],
-        messagesLoading:true
+        messages: [],
+        messagesLoading: true,
+        progressBar: false,
+        numUniqueUsers: '',
     }
 
     componentDidMount() {
@@ -34,11 +36,23 @@ class Messages extends React.Component {
         this.state.messagesRef.child(channelId).on('child_added', snap => {
             loadedMessages.push(snap.val());
             this.setState({ messages: loadedMessages, messagesLoading: false});
+            this.countUniqueUsers(loadedMessages);
         })
     }
 
+    countUniqueUsers = (messages) => {
+        const uniqueUsers = messages.reduce((acc,message) => {
+            if(!acc.includes(message.user.name)){
+                acc.push(message.user.name);
+            }
+            return acc;
+        }, []);
+        const plural = uniqueUsers.length>1 || uniqueUsers===0;
+        const numUniqueUsers = `${uniqueUsers.length} user${plural ? "s":""}`;
+        this.setState({numUniqueUsers});
+    }
+
     displayMessages = (messages) => {
-        // console.log(messages);
         return (
             messages.length>0 && messages.map(message => {
                 return (
@@ -52,19 +66,30 @@ class Messages extends React.Component {
         )
     }
 
+    isProgressBarVisible = (percent) => {
+        if(percent>0){
+            this.setState({ progressBar: true });
+        }
+    }
+
+    displayChannelName = (channel) => channel ? `#${channel.name}`:'';
+
     render() {
-        const { messagesRef, user, channel, messages } = this.state;
+        const { messagesRef, user, channel, messages, progressBar, numUniqueUsers } = this.state;
         return (
             <React.Fragment>
-                <MessagesHeader />
+                <MessagesHeader 
+                    channelName={this.displayChannelName(channel)}
+                    numUniqueUsers={numUniqueUsers}
+                />
 
                 <Segment>
-                    <Comment.Group className="messages">
+                    <Comment.Group className={progressBar ? 'messages__progress' : 'messages'}>
                         {this.displayMessages(messages)}
                     </Comment.Group>
                 </Segment>
 
-                <MessageForm messagesRef={messagesRef} currentChannel={channel} currentUser={user}/>
+                <MessageForm messagesRef={messagesRef} currentChannel={channel} currentUser={user} isProgressBarVisible={this.isProgressBarVisible}/>
             </React.Fragment>
         )
     }
