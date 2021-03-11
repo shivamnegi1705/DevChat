@@ -4,13 +4,14 @@ import "firebase/database";
 import "firebase/storage";
 
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "project-name.firebaseapp.com",
-  databaseURL: "https://project-name.firebaseio.com",
-  projectId: "project-name",
-  storageBucket: "project-name.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyBUu57ZHlnX4AOc8hjVT-C8r0CqbDBmCf4",
+  authDomain: "devchat-15dea.firebaseapp.com",
+  projectId: "devchat-15dea",
+  databaseURL: "https://devchat-15dea-default-rtdb.firebaseio.com/",
+  storageBucket: "devchat-15dea.appspot.com",
+  messagingSenderId: "230265680588",
+  appId: "1:230265680588:web:d63fdd1b5782d4b2bf8869",
+  measurementId: "G-NBEKYML7JJ"
 };
 
 firebase.initializeApp(firebaseConfig);
